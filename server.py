@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 import argparse
-import os
+import os.path
 import SimpleHTTPServer
 import SocketServer
-import subprocess
 
 
 MyHandler = SimpleHTTPServer.SimpleHTTPRequestHandler
@@ -19,12 +18,11 @@ def parse_args():
 
 
 def main(args):
-    browser_cmd = ['xdg-open', 'http://{}:{}/myeditor'.format(args.host, args.port)]
     try:
-        os.chdir(args.www_dir)
+        www_dir_abs = os.path.abspath(args.www_dir)
+        os.chdir(www_dir_abs)
         svrd = SocketServer.TCPServer((args.host, args.port), MyHandler)
-        subprocess.call(browser_cmd)
-        print 'serving on {} out of "{}"'.format((args.host, args.port), args.www_dir)
+        print 'serving on {} out of "{}"'.format((args.host, args.port), www_dir_abs)
         svrd.serve_forever()
     except OSError as e:
         print e
